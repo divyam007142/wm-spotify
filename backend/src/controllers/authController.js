@@ -105,6 +105,7 @@ export async function callback(req, res, next) {
  */
 function renderVerificationPage(user, profile) {
   const email = profile.email || null;
+  const displayName = profile.display_name || profile.id || 'Spotify account';
   const escape = (value) =>
     String(value).replace(/[&<>"']/g, (c) => ({
       '&': '&amp;',
@@ -113,10 +114,6 @@ function renderVerificationPage(user, profile) {
       '"': '&quot;',
       "'": '&#39;',
     })[c]);
-
-  const nextStep = email
-    ? `Send <strong>${escape(email)}</strong> to the developer in your Discord DMs so they can add it to the app's allowed users list.`
-    : `Send the email address on your Spotify account to the developer in your Discord DMs so they can add it to the app's allowed users list.`;
 
   return `<!doctype html>
 <html lang="en">
@@ -129,19 +126,25 @@ function renderVerificationPage(user, profile) {
     background: #121212; color: #fff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
   .card { max-width: 420px; margin: 24px; padding: 32px; border-radius: 16px; background: #181818;
     box-shadow: 0 8px 24px rgba(0,0,0,0.4); text-align: center; }
-  .check { font-size: 40px; margin-bottom: 8px; }
   h1 { font-size: 20px; margin: 0 0 12px; color: #1db954; }
   p { line-height: 1.5; color: #d9d9d9; font-size: 15px; }
+  .account { padding: 14px; margin: 18px 0; border: 1px solid #2f2f2f; border-radius: 10px; }
+  .account strong { display: block; color: #fff; font-size: 17px; margin-bottom: 5px; }
+  a { display: inline-block; margin-top: 12px; padding: 11px 16px; border-radius: 999px; background: #1db954; color: #000; text-decoration: none; font-weight: 700; }
   .note { margin-top: 16px; padding: 12px 16px; background: #1e1e1e; border-radius: 8px; font-size: 13px; color: #b3b3b3; }
 </style>
 </head>
 <body>
   <div class="card">
-    <div class="check">✅</div>
-    <h1>Verification successful!</h1>
-    <p>Your Spotify account is now linked to Discord user <strong>${escape(user.discordId)}</strong>.</p>
-    <p>${nextStep}</p>
-    <div class="note">This app is still in Spotify developer mode, so this one-time step is required before your data can be read.</div>
+    <h1>Spotify connected</h1>
+    <p>Your Spotify account is linked successfully.</p>
+    <div class="account">
+      <strong>${escape(displayName)}</strong>
+      ${email ? `<span>${escape(email)}</span>` : ''}
+    </div>
+    <p>Discord user: <strong>${escape(user.discordId)}</strong></p>
+    <a href="/authorize?discord_id=${encodeURIComponent(user.discordId)}">Change Spotify account</a>
+    <div class="note">To use another Spotify account, click “Change Spotify account” and authorize it.</div>
   </div>
 </body>
 </html>`;
