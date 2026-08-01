@@ -10,7 +10,9 @@ dotenv.config();
 
 import { listSpotifyApps } from './spotifyApps.js';
 
-const REQUIRED = ['SESSION_SECRET', 'MONGODB_URI', 'INTERNAL_API_SECRET'];
+// INTERNAL_API_SECRET is optional. When configured, bot-facing API routes
+// enforce it; when absent, the middleware allows requests through.
+const REQUIRED = ['SESSION_SECRET', 'MONGODB_URI'];
 
 const missing = REQUIRED.filter((key) => !process.env[key]);
 
