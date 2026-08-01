@@ -1,0 +1,32 @@
+{
+  "name": "spotify-wm-backend",
+  "version": "1.0.0",
+  "description": "Backend service for spotify-wm: Spotify OAuth, token management, MongoDB, and REST API endpoints.",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "lint": "eslint src --ext .js",
+    "lint:fix": "eslint src --ext .js --fix",
+    "format": "prettier --write \"src/**/*.js\""
+  },
+  "keywords": ["spotify", "oauth", "express", "mongodb"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.7.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-session": "^1.18.0",
+    "helmet": "^7.1.0",
+    "mongoose": "^8.4.3",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "eslint": "^9.5.0",
+    "nodemon": "^3.1.4",
+    "prettier": "^3.3.2"
+  }
+}
