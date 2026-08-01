@@ -14,7 +14,6 @@ import {
   SPOTIFY_TOKEN_URL,
 } from '../config/spotify.js';
 import { getValidAccessToken } from './tokenService.js';
-import { TTLCache } from '../utils/cache.js';
 
 export const spotifyClient = axios.create({
   baseURL: SPOTIFY_API_BASE,
@@ -27,13 +26,8 @@ export const spotifyClient = axios.create({
  * Spotify's API when a user repeats the trigger within the same window —
  * fresh data is only fetched once this expires.
  */
-const PLAYBACK_CACHE_TTL_MS = 12_000; // ~10-15s per spec
-const playbackCache = new TTLCache({ ttlMs: PLAYBACK_CACHE_TTL_MS });
-
-/** Drops any cached playback snapshot for a user — call after disconnect/re-auth. */
-export function invalidatePlaybackCache(discordId) {
-  playbackCache.delete(discordId);
-}
+/** Playback is always fetched live so song/state changes are reflected immediately. */
+export function invalidatePlaybackCache(_discordId) {}
 
 /**
  * @param {string} state
@@ -89,9 +83,6 @@ export async function getSpotifyProfile(accessToken) {
  * caching/refresh is handled transparently by tokenService.getValidAccessToken.
  */
 export async function getCurrentlyPlaying(discordId) {
-  const cached = playbackCache.get(discordId);
-  if (cached !== undefined) return cached;
-
   const accessToken = await getValidAccessToken(discordId);
 
   const response = await spotifyClient.get('/me/player/currently-playing', {
@@ -115,7 +106,6 @@ export async function getCurrentlyPlaying(discordId) {
     };
   }
 
-  playbackCache.set(discordId, track);
   return track;
 }
 
