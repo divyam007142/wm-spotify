@@ -41,6 +41,10 @@ export async function authorize(req, res, next) {
       });
     }
 
+    console.log(
+      `[auth] Selecting ${app.id} for Discord user ${discordId}; redirect=${app.redirectUri}`
+    );
+
     const state = Buffer.from(
       JSON.stringify({ discordId, appId: app.id, nonce: crypto.randomUUID() })
     ).toString('base64url');
@@ -92,6 +96,10 @@ export async function callback(req, res, next) {
     invalidatePlaybackCache(state.discordId);
     res.status(200).send(renderVerificationPage(user, profile));
   } catch (err) {
+    console.error(
+      '[auth] Spotify OAuth failed:',
+      err.response?.data || err.message
+    );
     if (err.response?.data) err.status = 502;
     next(err);
   }
